@@ -26,7 +26,7 @@ https://github.com/MartinYeung5/20240506_move_digital_contract_verification
     * blueprint is done, but still improve some specific parts
 
 
-3. 30340508
+3. 20240508
 * frontend section:
     * zklogin (with google account) - still testing
 * contract section:
