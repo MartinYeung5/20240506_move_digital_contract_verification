@@ -22,8 +22,8 @@ https://github.com/MartinYeung5/20240506_move_digital_contract_verification
 4. database - mongoDb
 
 ##### Problem
-* zk verification issue: can't use the dependency of ark-circom within tarui
-* zklogin + wallet login can't combined together
+* zk verification issue: 在tarui內, 加入 dependency of ark-circom 會出現問題, 暫時仍然在想解決方法。
+* 暫時不能實現 zklogin + wallet login, 但各自分開就沒問題。
 
 ##### Process
 1. 20240506
