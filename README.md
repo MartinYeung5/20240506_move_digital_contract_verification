@@ -10,6 +10,8 @@ https://github.com/MartinYeung5/20240506_move_digital_contract_verification
 
 #### Structure
 1. smart contract - using Move
+    * 1.1 contract: digital contract - will use for reacord the hashed data of digital contract and it will be used to do verification
+    * 1.2 contract: 
 2. zk verification - 
 3. frontend - Nextjs
 4. database - mongoDb
