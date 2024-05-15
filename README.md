@@ -16,7 +16,7 @@ https://github.com/MartinYeung5/20240506_move_digital_contract_verification
 2. zk verification - user will input something to verify the digital contract/ personal identity. 
     * 2.1 standard: Groth16 (testing)
     * 2.2 backend: Rust
-    * 2.3 frontend: tarui + Nextjs : will pass the verification 
+    * 2.3 frontend: tarui + Nextjs : will pass the verification to the move contract
     * 2.4 smart contract: zk_function
 3. frontend - vite
 4. database - mongoDb
