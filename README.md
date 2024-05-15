@@ -4,7 +4,7 @@
 https://github.com/MartinYeung5/20240506_move_digital_contract_verification
 
 #### Concept
-1. develop a platform for user to build the digital contract with diferent parties
+1. develop a platform for user to build the digital contract with different parties
 2. develop the zk verification function for the contract
 3. contract audit with AI application
 
