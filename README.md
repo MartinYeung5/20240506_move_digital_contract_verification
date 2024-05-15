@@ -18,7 +18,7 @@ https://github.com/MartinYeung5/20240506_move_digital_contract_verification
     * 2.2 backend: Rust
     * 2.3 frontend: tarui + Nextjs : will pass the verification 
     * 2.4 smart contract: zk_function
-3. frontend - Nextjs
+3. frontend - vite
 4. database - mongoDb
 
 ##### Problem
