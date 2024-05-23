@@ -1,4 +1,4 @@
-module digital_contract::digital_contract_20240507 {
+module digital_contract::digital_contract_20240521 {
 
     //==============================================================================================
     // Dependencies
@@ -19,9 +19,11 @@ module digital_contract::digital_contract_20240507 {
     const EInsufficientPayment: u64 = 3;
     // error code for invalid task id
     const EInvalidTaskId: u64 = 4;
-    // error code for invalid budget
+    // error code for invalid budget amount
     const EInvalidBudget: u64 = 5;
-
+    // error code for invalid task status
+    const EInvalidTaskStatus: u64 = 6;
+    
     //==============================================================================================
     // Structs 
     //==============================================================================================
@@ -30,6 +32,7 @@ module digital_contract::digital_contract_20240507 {
         The contract struct represents a digital contract in the contract hub. 
         A contract is a global shared object that is managed by the contract owner. 
         The contract owner is designated by the ownership of the contract owner capability. 
+        * anyone can create a new contract.
         @param id - The object id of the contract object.
         @param contract_owner_cap - The object id of the contract owner capability.
         @param balance - The balance of SUI coins in the contract.
@@ -46,7 +49,8 @@ module digital_contract::digital_contract_20240507 {
 	}
 
     /*
-        one contract can have zero to many tasks
+        one contract can have zero to many tasks.
+        * only contract creator can create
         @param id - The object id of the task object.
         @param contract - The object id of the contract.
         @param service_provider - The address of service provider for the task.
@@ -60,12 +64,12 @@ module digital_contract::digital_contract_20240507 {
     public struct Task has store {
 		id: u64,
         contract: ID,
-		service_provider: u64, //will have one service_provider
+		service_provider: address, 
 		title: String,
 		description: String,
 		budget: u64,
         category: String,
-        status: String
+        status: u8
 	}
 
     /*
@@ -216,7 +220,7 @@ module digital_contract::digital_contract_20240507 {
         @param owner - The address of the owner of the contract.
         @param ctx - The transaction context.
 	*/
-	public fun create_contract(owner: address, contract_hash: String, ctx: &mut TxContext) {
+	public entry fun create_contract(owner: address, contract_hash: String, ctx: &mut TxContext) {
         let contract_uid = object::new(ctx); 
         let contract_owner_cap_uid = object::new(ctx); 
 
@@ -246,29 +250,39 @@ module digital_contract::digital_contract_20240507 {
     /*
         Adds a new task to the contract and emits an TaskAdded event. 
         Abort if the contract owner capability does not match.
-        @param contract - The contract to add the task to.
-        @param contract_owner_cap - The contract owner capability of the contract.
+        @param contract - The contract to add the task to. (object id)
+        @param contract_owner_cap - The contract owner capability of the contract. (object id)
         @param service_provider - The ID of the service provider.
         @param title - The title of the task.
         @param description - The description of the task.
-        @param budget - The price of the task.
+        @payment_coin - The object id of the Coin<SUI>.
+        @param budget - The price (u64 format) of the task.
         @param category - The category of the task.
         @param ctx - The transaction context.
     */
-    public fun add_task(
+    public entry fun add_task(
         contract: &mut Contract,
         contract_owner_cap: &ContractOwnerCapability, 
-        service_provider: u64,
+        service_provider: address,
         title: vector<u8>,
         description: vector<u8>,
-        budget: u64, 
+        payment_coin: &mut coin::Coin<SUI>, 
+        budget: u64,
         category: String,
-        status: String
+        status: u8,
+        ctx: &mut TxContext
     ) {
         assert!(contract.contract_owner_cap== object::uid_to_inner(&contract_owner_cap.id), ENotContractOwner);
         assert!(budget>0, EInvalidBudget);
 
         let task_id = contract.tasks.length();
+
+         let value = payment_coin.value();
+         assert!(value >= budget, EInsufficientPayment);
+         let paid = payment_coin.split(budget, ctx);
+
+        coin::put(&mut contract.balance, paid);
+
 
         let task = Task{
             id: task_id,
@@ -291,6 +305,27 @@ module digital_contract::digital_contract_20240507 {
     }
 
     /*
+        Add fund to specifci contract
+        @param contract - The contract to have the task.
+        @param payment_coin - The payment coin for the task.
+        @param budget - The amount of the coin.
+        @param ctx - The transaction context.
+    */
+    public entry fun add_fund_to_contract(
+        contract: &mut Contract,
+        payment_coin: &mut coin::Coin<SUI>, 
+        budget: u64,
+        ctx: &mut TxContext
+    ) {
+        assert!(budget>0, EInvalidBudget);
+        let value = payment_coin.value();
+        assert!(value >= budget, EInsufficientPayment);
+        let paid = payment_coin.split(budget, ctx);
+
+        coin::put(&mut contract.balance, paid);
+    }
+
+    /*
         Pay for task from the contract and emits an PrePaidTaskEvent. 
         Abort if the task id is invalid /
         the payment coin is insufficient
@@ -302,7 +337,7 @@ module digital_contract::digital_contract_20240507 {
         @param payment_coin - The payment coin for the task.
         @param ctx - The transaction context.
     */
-    public fun pay_for_task(
+    public entry fun pay_for_task(
         contract: &mut Contract, 
         task_id: u64,
         user_address: address,
@@ -334,6 +369,43 @@ module digital_contract::digital_contract_20240507 {
         // vector::borrow_mut(&mut contract.tasks, task_id).status = paid;
     }
 
+    public entry fun update_task_status(
+        contract: &mut Contract,
+        contract_owner_cap: &ContractOwnerCapability,
+        task_id: u64,
+        status: u8,
+        ctx: &mut TxContext
+    ) {
+        //assert!(service_provider == tx_context::sender(ctx), EInvalidWithdrawalAmount);
+        assert!(contract.contract_owner_cap== object::uid_to_inner(&contract_owner_cap.id), ENotContractOwner);
+
+        let task = &mut contract.tasks[task_id];
+        let task_service_provider = &mut task.service_provider;
+        let task_status = &mut task.status;
+        *task_status = status;
+
+    }
+
+    // 0 = start task, 2 = finished task, 3 = failed task
+    public entry fun withdraw_from_completed_task(
+        contract: &mut Contract,
+        task_id: u64,
+        ctx: &mut TxContext
+    ) {
+        //assert!(service_provider == tx_context::sender(ctx), EInvalidWithdrawalAmount);
+
+        let task = &mut contract.tasks[task_id];
+        let task_status = task.status;
+        
+        assert!(task_status == 2, EInvalidTaskStatus);
+
+        let task_budget = task.budget;
+        let service_provider = task.service_provider;
+        let take_coin = coin::take(&mut contract.balance, task_budget, ctx);
+
+        transfer::public_transfer(take_coin, service_provider);
+    }
+
     /*
         Withdraws SUI from the contract to the owner and emits a ContractWithdrawal event. 
         Abort if the contract owner capability does not match the contract or if the amount is invalid.
@@ -345,7 +417,8 @@ module digital_contract::digital_contract_20240507 {
         @param owner - The address of the owner of the withdrawal.
         @param ctx - The transaction context.
     */
-    public fun withdraw_from_contract(
+
+    public entry fun withdraw_from_contract(
         contract: &mut Contract,
         contract_owner_cap: &ContractOwnerCapability,
         amount: u64,
@@ -354,7 +427,6 @@ module digital_contract::digital_contract_20240507 {
     ) {
         
         assert!(contract.contract_owner_cap== object::uid_to_inner(&contract_owner_cap.id), ENotContractOwner);
-        
         assert!(amount > 0 && amount <= contract.balance.value(), EInvalidWithdrawalAmount);
 
         let take_coin = coin::take(&mut contract.balance, amount, ctx);
@@ -419,11 +491,11 @@ module digital_contract::digital_contract_20240507 {
         task.budget
     }
 
-    public fun get_task_service_provider(task: &Task): u64{
+    public fun get_task_service_provider(task: &Task): address{
         task.service_provider
     }
 
-    public fun get_task_status(task: &Task): String{
+    public fun get_task_status(task: &Task): u8{
         task.status
     }
 
