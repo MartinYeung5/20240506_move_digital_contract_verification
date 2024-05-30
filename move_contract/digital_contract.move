@@ -7,6 +7,8 @@ module digital_contract::digital_contract_20240521 {
     use sui::sui::SUI;
     use std::string::{Self, String};
     use sui::{coin, balance::{Self, Balance}};
+    use sui::table::{Table, Self};
+    use sui::tx_context::{TxContext};
 
     //==============================================================================================
     // Error codes 
@@ -45,7 +47,8 @@ module digital_contract::digital_contract_20240521 {
 		balance: Balance<SUI>,
 		tasks: vector<Task>, // will have many tasks
         task_count: u64,
-        contract_hash: String // use the hashed data for the contract content and will update when the contract data is updated
+        contract_hash: String, // use the hashed data for the contract content and will update when the contract data is updated
+        //contract_record: Table, // add contract record to contract table
 	}
 
     /*
