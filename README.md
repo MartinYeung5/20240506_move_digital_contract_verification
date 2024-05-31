@@ -15,14 +15,14 @@ https://github.com/MartinYeung5/20240506_move_digital_contract_verification
 #### Structure
 1. smart contract - using Move
     * 1.1 contract: digital_contract - will use for reacord the hashed data of digital contract and it will be used to do verification
-    * 1.2 contract: multisig2 (testing)- will handle the multi sig function
-    * 1.3 zk_function (testing)- will handle zk verification
+    * 1.2 contract: multisig (testing)- will handle the multi sig function
+    * 1.3 contract: zk_function (testing)- will handle zk verification
 2. zk verification - user will input something to verify the digital contract/ personal identity. 
     * 2.1 standard: Groth16 (testing)
     * 2.2 backend: Rust
     * 2.3 frontend: tarui + Nextjs : will pass the verification to the move contract
     * 2.4 smart contract: zk_function
-3. frontend - vite
+3. frontend - vite (react)
 4. database - mongoDb
 
 ##### Problem
