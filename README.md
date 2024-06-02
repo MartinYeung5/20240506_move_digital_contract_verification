@@ -23,9 +23,6 @@ https://github.com/MartinYeung5/20240506_move_digital_contract_verification
     * 2.4 smart contract: zk_function
 3. frontend - vite (react)
 
-##### Current Issue
-* zk verification issue: still testing
-
 ##### Process
 
 
