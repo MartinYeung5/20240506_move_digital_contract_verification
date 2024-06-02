@@ -4,11 +4,11 @@
 https://github.com/MartinYeung5/20240506_move_digital_contract_verification
 
 #### Concept
-1. Develop digital contract verification platform​
+1. Develop digital contract verification platform​.
 2. User can create digital contract​ including generating digital version of paper contract and new digital contract​.
-3. User can upload hashed digital contract to blockchain (without sensitive data)​
-4. User can sign digital contract online and can implement multisig
-5. User can verify contract and use ZKP to protect privacy including zkLogin​
+3. User can upload hashed digital contract to blockchain (without sensitive data)​.
+4. User can sign digital contract online and can implement multisig.
+5. User can verify contract and use ZKP to protect privacy including zkLogin​.
 6. Project use AI to do contract audit in order to detect the risk from the contract and discovery the problem.
 
 #### Structure
