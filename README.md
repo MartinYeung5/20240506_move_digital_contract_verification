@@ -3,7 +3,7 @@
 #### Project repo
 https://github.com/MartinYeung5/20240506_move_digital_contract_verification
 
-#### Concept
+#### Introduction
 1. Develop digital contract verification platform​.
 2. User can create digital contract​ including generating digital version of paper contract and new digital contract​.
 3. User can upload hashed digital contract to blockchain (without sensitive data)​.
