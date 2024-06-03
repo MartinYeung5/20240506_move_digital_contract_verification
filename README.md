@@ -22,6 +22,7 @@ https://github.com/MartinYeung5/20240506_move_digital_contract_verification
     * 2.3 frontend: tarui + Nextjs : will pass the verification to the move contract
     * 2.4 smart contract: zk_function
 3. frontend - vite (react)
+* https://20240531-sui-nextjs-frontend.vercel.app/
 
 ##### Milestone
 * 2024/06 optimize digital_contract, implement zk function to contract verifivation
