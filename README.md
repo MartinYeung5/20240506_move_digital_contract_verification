@@ -23,7 +23,7 @@ https://github.com/MartinYeung5/20240506_move_digital_contract_verification
     * 2.4 smart contract: zk_function
 3. frontend - vite (react)
 
-##### Process
-
+##### Milestone
+* 2024/06 optimize digital_contract, implement zk function to contract verifivation
 
 #### References
